@@ -31,40 +31,59 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
-async function main() {
+async function creat() {
   // await prisma.user.deleteMany()
-  // const user = await prisma.user.create({
-  //   data: {
-  //     name: "dev",
-  //     email: "dev@gmail.com",
-  //     age: 20,
-  //     userPreference: {
-  //       create: {
-  //         emailUpdates: true,
-  //       }
-  //     }
-  //   },
-  //   // include: {
-  //   //     userPreference: true,
-  //   // }
 
-  //   // OR USE SELECT
-
-  //   // select: {
-  //   //   name: true,
-  //   //   userPreference: true
-  //   // }
-  // })
-
-
+  const post = await prisma.post.createMany({
+    data: [{
+      title: "Mental Health",
+      role: "Mental Health Professional",
+      content: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful?",
+      fullcontent: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful? Here are some tips to get started:\n\n1. Practice mindfulness daily\n2. Stay connected with loved ones\n3. Get regular exercise\n4. Maintain a healthy sleep schedule\n5. Seek professional help when needed\n\nRemember, you're not alone in this journey.",
+      likes: 234,
+      comments: 45,
+      username: "DEV-endra"
+    }, {
+      title: "Mental Health",
+      role: "Mental Health Professional",
+      content: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful?",
+      fullcontent: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful? Here are some tips to get started:\n\n1. Practice mindfulness daily\n2. Stay connected with loved ones\n3. Get regular exercise\n4. Maintain a healthy sleep schedule\n5. Seek professional help when needed\n\nRemember, you're not alone in this journey.",
+      likes: 234,
+      comments: 45,
+      username: "DEV-endra"
+    },
+    {
+      title: "Mental Health",
+      role: "Mental Health Professional",
+      content: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful?",
+      fullcontent: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful? Here are some tips to get started:\n\n1. Practice mindfulness daily\n2. Stay connected with loved ones\n3. Get regular exercise\n4. Maintain a healthy sleep schedule\n5. Seek professional help when needed\n\nRemember, you're not alone in this journey.",
+      likes: 234,
+      comments: 45,
+      username: "DEV-endra"
+    }
+    ]
+  })
   // console.log(user)
-  const all = await prisma.user.findMany()
+  const all = await prisma.post.findMany()
   console.log(all)
 }
 
-// main();
+async function del() {
+  await prisma.post.deleteMany();
+}
 
+async function print() {
+  const all = await prisma.user.findMany()
+  console.log(all)
+}
+// del();
+
+// print();
+
+creat();
 // error handler
+
+
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;

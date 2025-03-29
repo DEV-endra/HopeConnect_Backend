@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 const { register, login } = require("../controllers/authController");
 const { check } = require("express-validator");
-
 /* GET home page. */
 router.get("/", function (req, res) {
   res.send("done");

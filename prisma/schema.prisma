@@ -21,4 +21,19 @@ model User {
   role          String
   hash_password String
   createdAt     DateTime @default(now())
+  Posts         Post[] // ONE TO MANY RELATION WITH
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  title       String
+  role        String
+  content     String
+  fullcontent String
+  likes       Int
+  comments    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  User        User?    @relation(fields: [username], references: [username])
+  username    String?
 }

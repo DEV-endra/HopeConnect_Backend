@@ -35,12 +35,21 @@ exports.register = async (req, res) => {
 // User Login
 exports.login = async (req, res) => {
     const { email, password } = req.body;
+    console.log(email);
     try {
-        const user = await prisma.user.findUnique({ where: { email } });
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { username: email },
+                    { email: email }
+                ]
+            }
+        });
+
         // console.log(user);
         if (!user) return res.status(400).json({ error: "Invalid credentials" });
         const isMatch = await bcrypt.compare(password, user.hash_password);
-        if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
+        if (!isMatch) return res.status(400).json({ error: "Incorrect Password" });
 
         const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
             expiresIn: "1h",
