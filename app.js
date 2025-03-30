@@ -73,14 +73,14 @@ async function del() {
 }
 
 async function print() {
-  const all = await prisma.user.findMany()
+  const all = await prisma.post.findMany()
   console.log(all)
 }
 // del();
 
-// print();
+print();
 
-creat();
+// creat();
 // error handler
 
 
