@@ -23,9 +23,23 @@ exports.register = async (req, res) => {
                 role: role,
                 hash_password: hashedPassword
             },
+        });   // ACCOUNT CREATION
+
+        //FETCHING USER DATA THEN TO GET HIM LOGGED IN
+        const user_fetch = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { username: email },
+                    { email: email }
+                ]
+            }
         });
-        console.log(user);
-        res.status(201).json({ message: "User registered successfully!" });
+        const token = jwt.sign({ id: user_fetch.id, role: user_fetch.role }, JWT_SECRET, {
+            expiresIn: "1h",
+        });
+        limited_user = { username: user_fetch.username, role: user_fetch.role };
+        res.json({ token: token, userdata: limited_user });   // SENDING USER DATA AND TOKEN
+
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "User registration failed." });
@@ -55,7 +69,8 @@ exports.login = async (req, res) => {
             expiresIn: "1h",
         });
         // console.log(token);
-        res.json({ token });
+
+        res.json({ token: token, role: user.role, username: user.username });  // ALSO SENDING USER DATA
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Login failed" });

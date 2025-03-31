@@ -50,7 +50,7 @@ async function creat() {
       fullcontent: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful? Here are some tips to get started:\n\n1. Practice mindfulness daily\n2. Stay connected with loved ones\n3. Get regular exercise\n4. Maintain a healthy sleep schedule\n5. Seek professional help when needed\n\nRemember, you're not alone in this journey.",
       likes: 234,
       comments: 45,
-      username: "DEV-endra"
+      username: "dev2005"
     },
     {
       title: "Mental Health",
@@ -78,7 +78,7 @@ async function print() {
 }
 // del();
 
-print();
+// print();
 
 // creat();
 // error handler
