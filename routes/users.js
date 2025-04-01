@@ -15,7 +15,7 @@ router.get('/posts', authMiddleware, async function (req, res) {
     distinct: ['username'],
     orderBy: { createdAt: 'desc' },
   });
-  console.log(posts);
+  // console.log(posts);
   res.status(200).json(posts);
   // console.log('he he u can see the posts');
 });
