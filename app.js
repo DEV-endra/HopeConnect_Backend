@@ -76,13 +76,12 @@ async function print() {
   const all = await prisma.post.findMany()
   console.log(all)
 }
+
+
 // del();
-
 // print();
-
 // creat();
 // error handler
-
 
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
