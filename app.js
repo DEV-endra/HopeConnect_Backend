@@ -62,7 +62,8 @@ async function creat() {
 }
 
 async function del() {
-  await prisma.user.deleteMany();
+  await prisma.message.deleteMany();
+  await prisma.conversation.deleteMany();
 }
 
 async function print() {
