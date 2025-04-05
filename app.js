@@ -4,7 +4,6 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
 const prisma = new PrismaClient();
 
 var indexRouter = require('./routes/index');
@@ -32,51 +31,44 @@ app.use(function (req, res, next) {
 });
 
 async function creat() {
-  // await prisma.user.deleteMany()
 
-  const post = await prisma.post.createMany({
-    data: [{
-      title: "Mental Health",
-      role: "Mental Health Professional",
-      content: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful?",
-      fullcontent: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful? Here are some tips to get started:\n\n1. Practice mindfulness daily\n2. Stay connected with loved ones\n3. Get regular exercise\n4. Maintain a healthy sleep schedule\n5. Seek professional help when needed\n\nRemember, you're not alone in this journey.",
-      likes: 234,
-      comments: 45,
-      username: "DEV-endra"
-    }, {
-      title: "Mental Health",
-      role: "Mental Health Professional",
-      content: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful?",
-      fullcontent: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful? Here are some tips to get started:\n\n1. Practice mindfulness daily\n2. Stay connected with loved ones\n3. Get regular exercise\n4. Maintain a healthy sleep schedule\n5. Seek professional help when needed\n\nRemember, you're not alone in this journey.",
-      likes: 234,
-      comments: 45,
-      username: "dev2005"
-    },
-    {
-      title: "Mental Health",
-      role: "Mental Health Professional",
-      content: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful?",
-      fullcontent: "Remember, it's okay to not be okay. Taking care of your mental health is just as important as taking care of your physical health. What are some self-care practices you've found helpful? Here are some tips to get started:\n\n1. Practice mindfulness daily\n2. Stay connected with loved ones\n3. Get regular exercise\n4. Maintain a healthy sleep schedule\n5. Seek professional help when needed\n\nRemember, you're not alone in this journey.",
-      likes: 234,
-      comments: 45,
-      username: "DEV-endra"
-    }
+  await prisma.message.createMany({
+    data: [
+      {
+        sender_id: "55ccfdd3-41c7-41fc-8ad4-5e8dfa575c52", // DEVENDRA CHAND
+        text: "Hey Soumya, how are you?",
+        conversationId: 4
+      },
+      {
+        sender_id: "82904a2a-5aee-471d-a4ec-37b53b736e57", // soumyajyoti mohanta
+        text: "Hey! I'm good. What about you?",
+        conversationId: 4
+      },
+      {
+        sender_id: "55ccfdd3-41c7-41fc-8ad4-5e8dfa575c52",
+        text: "I'm doing great! Just working on some Prisma stuff.",
+        conversationId: 4
+      },
+      {
+        sender_id: "82904a2a-5aee-471d-a4ec-37b53b736e57",
+        text: "Oh nice! Need any help?",
+        conversationId: 4
+      }
     ]
-  })
-  // console.log(user)
-  const all = await prisma.post.findMany()
+  });
+
+  const all = await prisma.message.findMany()
   console.log(all)
 }
 
 async function del() {
-  await prisma.post.deleteMany();
+  await prisma.user.deleteMany();
 }
 
 async function print() {
-  const all = await prisma.post.findMany()
+  const all = await prisma.user.findMany()
   console.log(all)
 }
-
 
 // del();
 // print();

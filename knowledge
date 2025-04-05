@@ -7,3 +7,6 @@ JUST REMEMBER
 2- BCRYPTION
 3- JWT
 
+
+npx prisma migrate dev --name init
+

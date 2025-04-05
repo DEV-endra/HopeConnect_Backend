@@ -38,7 +38,7 @@ exports.register = async (req, res) => {
         const token = jwt.sign({ id: user_fetch.id, role: user_fetch.role }, JWT_SECRET, {
             expiresIn: "1h",
         });
-        res.json({ token: token, role: user_fetch.role, username: user_fetch.username, name: user_fetch.name });  // ALSO SENDING USER DATA
+        res.json({ token: token, role: user_fetch.role, username: user_fetch.username, name: user_fetch.name, Id: user_fetch.id });  // ALSO SENDING USER DATA
 
     } catch (error) {
         console.log(error);
@@ -70,7 +70,7 @@ exports.login = async (req, res) => {
         });
         // console.log(token);
 
-        res.json({ token: token, role: user.role, username: user.username, name: user.name });  // ALSO SENDING USER DATA
+        res.json({ token: token, role: user.role, username: user.username, name: user.name, Id: user.id });  // ALSO SENDING USER DATA
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Login failed" });

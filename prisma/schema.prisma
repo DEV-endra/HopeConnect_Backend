@@ -14,14 +14,18 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  name          String
-  username      String   @unique
-  email         String   @unique
-  role          String
-  hash_password String
-  createdAt     DateTime @default(now())
-  Posts         Post[] // ONE TO MANY RELATION WITH
+  id             String         @id @default(uuid())
+  name           String
+  username       String         @unique
+  email          String         @unique
+  role           String
+  hash_password  String
+  createdAt      DateTime       @default(now())
+  avatar         String?
+  description    String?
+  Posts          Post[] // ONE TO MANY RELATION WITH
+  conversations1 Conversation[] @relation("User1")
+  conversations2 Conversation[] @relation("User2")
 }
 
 model Post {
@@ -36,4 +40,23 @@ model Post {
   updatedAt   DateTime @updatedAt
   User        User?    @relation(fields: [username], references: [username])
   username    String?
+}
+
+model Conversation {
+  id       Int       @id @default(autoincrement())
+  user1_id String
+  user2_id String
+  lastText String
+  user1    User      @relation("User1", fields: [user1_id], references: [id])
+  user2    User      @relation("User2", fields: [user2_id], references: [id])
+  Messages Message[]
+}
+
+model Message {
+  id             Int           @id @default(autoincrement())
+  sender_id      String
+  text           String
+  time           DateTime      @default(now())
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  conversationId Int
 }

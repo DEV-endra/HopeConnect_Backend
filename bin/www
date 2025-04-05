@@ -1,90 +1,125 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
+import jwt from 'jsonwebtoken';
+import debugLib from 'debug';
+import http from 'http';
+import { Server } from 'socket.io';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-var app = require('../app');
-var debug = require('debug')('hopeconnect-backend:server');
-var http = require('http');
+import app from '../app.js';
+import { PrismaClient } from '@prisma/client';
+import activeUsers from '../wsStore.js'; // Adjust the path if needed
 
-/**
- * Get port from environment and store in Express.
- */
+const prisma = new PrismaClient();
+const debug = debugLib('hopeconnect-backend:server');
 
-var port = normalizePort(process.env.PORT || '3000');
+const JWT_SECRET = 'your_super_secret_key';
+
+function verifyToken(token) {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return decoded.id;
+  } catch (err) {
+    return null;
+  }
+}
+
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
+const server = http.createServer(app);
 
-var server = http.createServer(app);
+// Attach Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+});
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+
+io.on('connection', (socket) => {
+
+  // Activate user
+  socket.on('token', (token) => {
+    const userId = verifyToken(token);
+    if (userId) {
+      console.log(userId);
+      activeUsers.set(userId, socket.id);
+    }
+  });
+
+  // Handle messages
+  socket.on('message', async ({ senderId, receiverId, msg, conversationId, username }) => {
+    const receiverSocketId = activeUsers.get(receiverId);
+
+    await prisma.message.create({
+      data: {
+        sender_id: senderId,
+        text: msg,
+        time: new Date(),
+        conversationId: conversationId,
+      },
+    });
+
+    console.log("dev");
+    console.log(receiverSocketId);
+
+    // io.emit('receiveMessage', { senderId, msg, username });
+    if (receiverSocketId) {
+      console.log("devaaa", receiverSocketId);
+      io.to(receiverSocketId).emit('receiveMessage', { senderId, msg, username });
+    }
+  });
+
+  // Deactivate user on disconnect
+  socket.on('disconnect', () => {
+    for (const [userId, socketId] of activeUsers.entries()) {
+      if (socketId === socket.id) {
+        activeUsers.delete(userId);
+        break;
+      }
+    }
+  });
+});
+
+io.engine.on("connection_error", (err) => {
+  console.log(err.req);      // the request object
+  console.log(err.code);     // the error code, for example 1
+  console.log(err.message);  // the error message, for example "Session ID unknown"
+  console.log(err.context);  // some additional error context
+});
 
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
-
 function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
+  const port = parseInt(val, 10);
+  if (isNaN(port)) return val; // named pipe
+  if (port >= 0) return port;  // port number
   return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+  if (error.syscall !== 'listen') throw error;
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
       process.exit(1);
-      break;
     case 'EADDRINUSE':
       console.error(bind + ' is already in use');
       process.exit(1);
-      break;
     default:
       throw error;
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
