@@ -67,7 +67,7 @@ async function del() {
 }
 
 async function print() {
-  const all = await prisma.user.findMany()
+  const all = await prisma.message.findMany()
   console.log(all)
 }
 

@@ -5,6 +5,8 @@ const prisma = new PrismaClient();
 const JWT_SECRET = "your_super_secret_key";
 const { authMiddleware, roleMiddleware } = require("../controllers/authMiddleware");
 const jwt = require("jsonwebtoken");
+const { text } = require('stream/consumers');
+const { time } = require('console');
 
 function verifyToken(token) {
   try {
@@ -76,6 +78,46 @@ router.get('/newconversation', authMiddleware, async function (req, res) {
   res.status(200).json(newConversation);
 
 });
+
+
+router.get('/history', authMiddleware, async function (req, res) {
+
+  const token = req.header("Authorization")?.split(" ")[1];
+  console.log(token);
+  var user1 = verifyToken(token);
+  console.log(user1);
+
+  const userdata = await prisma.user.findFirst({
+    where: {
+      id: user1
+    },
+    select: {
+      username: true,
+    }
+  });
+
+  const username = userdata.username;
+  // console.log(username);
+  const chats = await prisma.gemini.findMany({
+    where: {
+      username: username,
+    },
+  });
+  // console.log(chats);
+
+  const sending_chats = chats.map(chat => ({
+    id: chat.id,
+    username: chat.sender,
+    text: chat.text,
+    time: chat.time
+
+  }));
+
+  // console.log(sending_chats);
+  res.status(200).json(sending_chats);
+
+});
+
 
 router.get('/chats', authMiddleware, async function (req, res) {
   const { username } = req.query;
@@ -174,18 +216,60 @@ router.post('/posted', authMiddleware, async function (req, res) {
   const post = await prisma.post.create({
     data: dat,
   });
-  //console.log(post);
   res.status(200).json("post uploaded");
-  // const posts = await prisma.post.findMany({
-  //   distinct: ['username'],
-  //   orderBy: { createdAt: 'desc' },
-  // });
-  // console.log(posts);
-  // res.status(200).json(posts);
-  // console.log('he he u can see the posts');
 });
 
+router.get('/philosophy', authMiddleware, async function (req, res) {
 
+  const { query } = req.query;
+  const token = req.header("Authorization")?.split(" ")[1];
+  var userId = verifyToken(token);
+
+  const userdata = await prisma.user.findFirst({
+    where: {
+      id: userId
+    },
+    select: {
+      username: true,
+    }
+  });
+
+  const username = userdata.username;
+
+  // inserting user's last chat
+  const chat = await prisma.gemini.create({
+    data: {
+      username: username,
+      sender: username,
+      text: query,
+    }
+  });
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/philosophy", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query }),
+    });
+    const ans = await response.json();
+
+    const chat = await prisma.gemini.create({
+      data: {
+        username: username,
+        sender: "gemini",
+        text: ans.answer,
+      }
+    });
+
+    console.log(chat);
+    res.status(200).json({ id: chat.id, text: chat.text, time: chat.time, username: "gemini" });
+  } catch (error) {
+    console.error("Error:", error);
+  }
+
+});
 
 
 module.exports = router;
