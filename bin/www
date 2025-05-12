@@ -4,12 +4,11 @@ import jwt from 'jsonwebtoken';
 import debugLib from 'debug';
 import http from 'http';
 import { Server } from 'socket.io';
-import { fileURLToPath } from 'url';
-import path from 'path';
 
 import app from '../app.js';
 import { PrismaClient } from '@prisma/client';
 import activeUsers from '../wsStore.js'; // Adjust the path if needed
+import { setupAudioSocket } from '../sockets/audioSocket.js';
 
 const prisma = new PrismaClient();
 const debug = debugLib('hopeconnect-backend:server');
@@ -37,7 +36,6 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
-
 
 io.on('connection', (socket) => {
 
@@ -90,6 +88,10 @@ io.engine.on("connection_error", (err) => {
   console.log(err.message);  // the error message, for example "Session ID unknown"
   console.log(err.context);  // some additional error context
 });
+
+
+// Initialize audio socket server
+setupAudioSocket(io);
 
 server.listen(port);
 server.on('error', onError);

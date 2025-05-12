@@ -5,7 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const prisma = new PrismaClient();
-
+const fs = require('fs')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 

@@ -5,8 +5,6 @@ const prisma = new PrismaClient();
 const JWT_SECRET = "your_super_secret_key";
 const { authMiddleware, roleMiddleware } = require("../controllers/authMiddleware");
 const jwt = require("jsonwebtoken");
-const { text } = require('stream/consumers');
-const { time } = require('console');
 
 function verifyToken(token) {
   try {
