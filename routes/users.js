@@ -296,4 +296,17 @@ router.get('/auth', function (req, res) {
   res.json(authParams); // returns { token, expire, signature }
 });
 
+router.post('/update', authMiddleware, async function (req, res) {
+  dat = req.body;
+  console.log(dat);
+  const user = await prisma.user.update({
+    where: { username: dat.username },
+    data: {
+      avatar: dat.avatar,
+    }
+  });
+  // console.log(user);
+  res.status(200).json("updated successfully");
+});
+
 module.exports = router;
