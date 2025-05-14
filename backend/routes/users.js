@@ -266,7 +266,7 @@ router.get('/philosophy', authMiddleware, async function (req, res) {
   });
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/philosophy", {
+    const response = await fetch("https://hopeconnect-backend-1.onrender.com/philosophy", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
