@@ -1,10 +1,19 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 class Item(BaseModel):
     query:str
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://hopeconnect-backend.onrender.com","https://hopeconnect.onrender.com"], 
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 with open("chunks.txt") as f:
     chunks = [line.strip() for line in f.readlines()]
