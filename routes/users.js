@@ -2,13 +2,21 @@ var express = require('express');
 var router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const JWT_SECRET = "your_super_secret_key";
 const { authMiddleware, roleMiddleware } = require("../controllers/authMiddleware");
 const jwt = require("jsonwebtoken");
+const ImageKit = require("imagekit");
+const process = require('process');
+require("dotenv").config();
+
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+});
 
 function verifyToken(token) {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return decoded.id;
   } catch (err) {
     return null;
@@ -21,13 +29,26 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/posts', authMiddleware, async function (req, res) {
+
   const posts = await prisma.post.findMany({
     distinct: ['username'],
     orderBy: { createdAt: 'desc' },
+    include: {
+      User: {
+        select: {
+          avatar: true
+        }
+      }
+    }
   });
-  // console.log(posts);
-  res.status(200).json(posts);
-  // console.log('he he u can see the posts');
+
+  const formattedPosts = posts.map(post => ({
+    ...post,
+    avatar: post.User?.avatar || null
+  }));
+
+  res.status(200).json(formattedPosts);
+
 });
 
 router.get('/newconversation', authMiddleware, async function (req, res) {
@@ -42,7 +63,7 @@ router.get('/newconversation', authMiddleware, async function (req, res) {
       {
         user1_id: user1,
         user2_id: peopleId,
-        lastText: "",
+        lastText: "xhf jbvjbi hfv",
       }
     ]
   });
@@ -69,7 +90,8 @@ router.get('/newconversation', authMiddleware, async function (req, res) {
     user1_id: newconv.user1_id,
     user2_id: newconv.user2_id,
     lastText: newconv.lastText,
-    another_user: anotherUser.username
+    another_user: anotherUser.username,
+    avatar: anotherUser.avatar,
   }
 
   //console.log(newConversation);
@@ -111,6 +133,7 @@ router.get('/history', authMiddleware, async function (req, res) {
 
   }));
 
+
   // console.log(sending_chats);
   res.status(200).json(sending_chats);
 
@@ -142,17 +165,17 @@ router.get('/chats', authMiddleware, async function (req, res) {
       // Fetch the username from the Users table
       const anotherUser = await prisma.user.findUnique({
         where: { id: anotherUserId },
-        select: { username: true }
       });
 
       return {
         ...conv,
-        another_user: anotherUser?.username || "Unknown"
+        another_user: anotherUser?.username || "Unknown",
+        avatar: anotherUser.avatar,
       };
     })
   );
 
-  // console.log(updatedConversations);
+  console.log(updatedConversations);
 
   const conversationIds = updatedConversations.map(conv => conv.id);
 
@@ -184,7 +207,6 @@ router.get('/chats', authMiddleware, async function (req, res) {
       };
     })
   );
-
 
   // extracting peoples from db
   const Peoples = await prisma.user.findMany({
@@ -269,5 +291,9 @@ router.get('/philosophy', authMiddleware, async function (req, res) {
 
 });
 
+router.get('/auth', function (req, res) {
+  const authParams = imagekit.getAuthenticationParameters();
+  res.json(authParams); // returns { token, expire, signature }
+});
 
 module.exports = router;
