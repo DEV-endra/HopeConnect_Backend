@@ -9,6 +9,13 @@ const fs = require('fs')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+const cors = require('cors');
+
+app.use(cors({
+  origin: "https://hopeconnect.onrender.com",
+  credentials: true
+}));
+
 var app = express();
 
 // view engine setup
