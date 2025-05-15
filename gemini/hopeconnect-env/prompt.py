@@ -37,7 +37,7 @@ model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
 
 def ask_gemini(query, context_chunks):
     context = "\n".join(context_chunks)
-    prompt = f"""You are an assistant helping users based on the following context.
+    prompt = f"""you are an assistant helping users on topics like mental health ,depression and related ones,be empathetic like humans ,help them and provide them guidance . below given is some context from some of the resources i had use them to provide assistance if something related and useful is there otherwise do it on your own , after that there will be a query from the user you have to help out
 
 Context:
 {context}
