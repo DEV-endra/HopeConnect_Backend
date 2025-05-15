@@ -296,6 +296,21 @@ router.get('/auth', function (req, res) {
   res.json(authParams); // returns { token, expire, signature }
 });
 
+router.post('/verify', async function (req, res) {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ status: "error", message: "Token not provided" });
+  }
+  const payload = verifyToken(token);
+
+  if (payload) {
+    res.status(200).json({ status: "valid", user: payload });
+  } else {
+    res.status(401).json({ status: "invalid", message: "Invalid or expired token" });
+  }
+});
+
 router.post('/update', authMiddleware, async function (req, res) {
   dat = req.body;
   console.log(dat);
