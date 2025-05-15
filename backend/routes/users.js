@@ -239,6 +239,21 @@ router.post('/posted', authMiddleware, async function (req, res) {
   res.status(200).json("post uploaded");
 });
 
+router.post('/verify', async function (req, res) {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ status: "error", message: "Token not provided" });
+  }
+  const payload = verifyToken(token);
+
+  if (payload) {
+    res.status(200).json({ status: "valid", user: payload });
+  } else {
+    res.status(401).json({ status: "invalid", message: "Invalid or expired token" });
+  }
+});
+
 router.get('/philosophy', authMiddleware, async function (req, res) {
 
   const { query } = req.query;
