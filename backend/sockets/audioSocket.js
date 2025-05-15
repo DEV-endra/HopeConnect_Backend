@@ -9,7 +9,7 @@ export function setupAudioSocket(io) {
             // console.log("user said:", transcript);
             const query = transcript;
             try {
-                const response = await fetch("http://127.0.0.1:8000/philosophy", {
+                const response = await fetch("https://hopeconnect-backend-1.onrender.com/philosophy", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
