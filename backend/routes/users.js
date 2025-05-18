@@ -324,4 +324,50 @@ router.post('/update', authMiddleware, async function (req, res) {
   res.status(200).json("updated successfully");
 });
 
+router.post('/username', async function (req, res) {
+  const { username } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+
+    if (user) {
+      return res.status(200).json({ verify: true });
+    } else {
+      return res.status(200).json({ verify: false });
+    }
+
+  } catch (error) {
+    console.error('Error checking username:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+
+});
+
+router.post('/email', async function (req, res) {
+  const { email } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (user) {
+      return res.status(200).json({ verify: true });
+    } else {
+      return res.status(200).json({ verify: false });
+    }
+
+  } catch (error) {
+    console.error('Error checking email:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+
+});
+
 module.exports = router;
