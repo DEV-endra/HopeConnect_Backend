@@ -48,7 +48,7 @@ router.get('/posts', authMiddleware, async function (req, res) {
   }));
 
   // dummy fetch to start the fast api server
-  fetch("https://hopeconnect-backend-1.onrender.com/philosophy", {
+  fetch("https://hopeconnect-backend-1.onrender.com", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
