@@ -47,17 +47,13 @@ router.get('/posts', authMiddleware, async function (req, res) {
     avatar: post.User?.avatar || null
   }));
 
-
-  try {   // dummy fetch to start the fast api server
-    const response = await fetch("https://hopeconnect-backend-1.onrender.com/philosophy", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("Error:", error);
-  }
+  // dummy fetch to start the fast api server
+  fetch("https://hopeconnect-backend-1.onrender.com/philosophy", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).catch(error => console.error("Error waking FastAPI server:", error.message));
 
   res.status(200).json(formattedPosts);
 
