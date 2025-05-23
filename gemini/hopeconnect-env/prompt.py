@@ -55,6 +55,8 @@ async def generate(item:Item):
     response = ask_gemini(item.query, top_chunks)
     return {"answer": response}
 
-
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 
