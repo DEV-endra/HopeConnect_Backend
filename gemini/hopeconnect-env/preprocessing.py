@@ -2,6 +2,7 @@ import fitz
 import os
 
 
+
 def extract():
     doc=fitz.open("book1.pdf")
     text=" "
