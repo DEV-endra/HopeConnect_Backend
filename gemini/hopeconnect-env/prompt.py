@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class Item(BaseModel):
     query:str
@@ -32,7 +36,7 @@ def get_top_k_chunks(query, k=3):
     top_indices = similarities.argsort()[-k:][::-1]
     return [chunks[i] for i in top_indices]
 
-genai.configure(api_key="AIzaSyAVHUfYtR9d6Ax3Pbw9-bkiWB1gGEmtxAQ")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
 
 def ask_gemini(query, context_chunks):
