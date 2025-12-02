@@ -37,7 +37,7 @@ def get_top_k_chunks(query, k=3):
     return [chunks[i] for i in top_indices]
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("models/gemini-pro-latest")
 
 def ask_gemini(query, context_chunks):
     context = "\n".join(context_chunks)
