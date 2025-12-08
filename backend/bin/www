@@ -89,7 +89,6 @@ io.engine.on("connection_error", (err) => {
   console.log(err.context);  // some additional error context
 });
 
-
 // Initialize audio socket server
 setupAudioSocket(io);
 

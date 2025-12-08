@@ -99,13 +99,11 @@ router.get('/newconversation', authMiddleware, async function (req, res) {
 
 });
 
-
 router.get('/history', authMiddleware, async function (req, res) {
 
   const token = req.header("Authorization")?.split(" ")[1];
   console.log(token);
   var user1 = verifyToken(token);
-  console.log(user1);
 
   const userdata = await prisma.user.findFirst({
     where: {
@@ -115,7 +113,8 @@ router.get('/history', authMiddleware, async function (req, res) {
       username: true,
     }
   });
-
+  
+  if(!userdata) return res.status(403).json({ error: "can't post in guest mode" });
   const username = userdata.username;
   // console.log(username);
   const chats = await prisma.gemini.findMany({
@@ -133,7 +132,6 @@ router.get('/history', authMiddleware, async function (req, res) {
 
   }));
 
-
   // console.log(sending_chats);
   res.status(200).json(sending_chats);
 
@@ -147,6 +145,9 @@ router.get('/chats', authMiddleware, async function (req, res) {
       username: username
     }
   })
+
+  if(!user) return res.status(403).json({ error: "can't post in guest mode" });
+
   const userId = user.id;
 
   const conversations = await prisma.conversation.findMany({
@@ -233,6 +234,17 @@ router.get('/chats', authMiddleware, async function (req, res) {
 
 router.post('/posted', authMiddleware, async function (req, res) {
   dat = req.body;
+
+  if (!dat.username) {
+      return res.status(403).json({ error: "can't post in guest mode" });
+  }
+  const userExists = await prisma.user.findUnique({
+      where: { username: dat.username },
+      select: { id: true }
+  });
+  if (!userExists) {
+      return res.status(403).json({ error: "can't post in guest mode" });
+  }
   const post = await prisma.post.create({
     data: dat,
   });
@@ -254,6 +266,8 @@ router.get('/philosophy', authMiddleware, async function (req, res) {
     }
   });
 
+  if(!userdata) return res.status(403).json({ error: "can't post in guest mode" });
+
   const username = userdata.username;
 
   // inserting user's last chat
@@ -266,7 +280,7 @@ router.get('/philosophy', authMiddleware, async function (req, res) {
   });
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/philosophy", {
+    const response = await fetch(process.env.PYTHON_SERVICE, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -298,14 +312,19 @@ router.get('/auth', function (req, res) {
 
 router.post('/verify', async function (req, res) {
   const { token } = req.body;
-
   if (!token) {
     return res.status(400).json({ status: "error", message: "Token not provided" });
   }
   const payload = verifyToken(token);
 
+  const userId = await prisma.user.findUnique({
+  where: { id: payload },
+  select: { role: true }
+  });
+  const role = userId?.role || "guest";
+  
   if (payload) {
-    res.status(200).json({ status: "valid", user: payload });
+    res.status(200).json({ status: "valid", user: payload,role:role });
   } else {
     res.status(401).json({ status: "invalid", message: "Invalid or expired token" });
   }
