@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 const { register, login } = require("../controllers/authController");
 const { check } = require("express-validator");
+const jwt = require("jsonwebtoken");
+const process = require('process');
+require("dotenv").config();
+
 /* GET home page. */
 router.get("/", function (req, res) {
   res.send("done");
