@@ -17,6 +17,28 @@ router.post(
   register
 );
 
+// for guest sign-in
+router.post("/GuestSignIn", (req, res) => {
+  
+  const guestId = `guest_${crypto.randomUUID()}`;
+  const token = jwt.sign(
+    { id: guestId,
+      role: "guest"
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+  res.json({
+    token,
+    role: "guest",
+    username: "Guest",
+    avatar: "/default-avatar.png",
+    name:"Mr. X",
+    Id:"guestId"
+  });
+
+});
+
 // Login Route
 router.post("/Login", login);
 

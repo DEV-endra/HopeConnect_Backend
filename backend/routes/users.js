@@ -63,9 +63,7 @@ router.get('/newconversation', authMiddleware, async function (req, res) {
 
   var { peopleId } = req.query;
   const token = req.header("Authorization")?.split(" ")[1];
-  console.log(token);
   var user1 = verifyToken(token);
-  console.log(user1);
   await prisma.conversation.createMany({
     data: [
       {
@@ -82,9 +80,6 @@ router.get('/newconversation', authMiddleware, async function (req, res) {
       user2_id: peopleId,
     }
   })
-
-  // console.log("RODIES");
-  // console.log(newconv);
 
   const anotherUserId = newconv.user1_id === user1 ? newconv.user2_id : newconv.user1_id;
 
@@ -113,7 +108,6 @@ router.get('/history', authMiddleware, async function (req, res) {
   const token = req.header("Authorization")?.split(" ")[1];
   console.log(token);
   var user1 = verifyToken(token);
-  console.log(user1);
 
   const userdata = await prisma.user.findFirst({
     where: {
@@ -123,7 +117,8 @@ router.get('/history', authMiddleware, async function (req, res) {
       username: true,
     }
   });
-
+  
+  if(!userdata) return res.status(403).json({ error: "can't post in guest mode" });
   const username = userdata.username;
   // console.log(username);
   const chats = await prisma.gemini.findMany({
@@ -141,12 +136,10 @@ router.get('/history', authMiddleware, async function (req, res) {
 
   }));
 
-
   // console.log(sending_chats);
   res.status(200).json(sending_chats);
 
 });
-
 
 router.get('/chats', authMiddleware, async function (req, res) {
   const { username } = req.query;
@@ -155,6 +148,9 @@ router.get('/chats', authMiddleware, async function (req, res) {
       username: username
     }
   })
+
+  if(!user) return res.status(403).json({ error: "can't post in guest mode" });
+
   const userId = user.id;
 
   const conversations = await prisma.conversation.findMany({
@@ -239,28 +235,26 @@ router.get('/chats', authMiddleware, async function (req, res) {
 
 });
 
+
 router.post('/posted', authMiddleware, async function (req, res) {
   dat = req.body;
+
+  if (!dat.username) {
+      return res.status(403).json({ error: "can't post in guest mode" });
+  }
+  const userExists = await prisma.user.findUnique({
+      where: { username: dat.username },
+      select: { id: true }
+  });
+  if (!userExists) {
+      return res.status(403).json({ error: "can't post in guest mode" });
+  }
   const post = await prisma.post.create({
     data: dat,
   });
   res.status(200).json("post uploaded");
 });
 
-router.post('/verify', async function (req, res) {
-  const { token } = req.body;
-
-  if (!token) {
-    return res.status(400).json({ status: "error", message: "Token not provided" });
-  }
-  const payload = verifyToken(token);
-
-  if (payload) {
-    res.status(200).json({ status: "valid", user: payload });
-  } else {
-    res.status(401).json({ status: "invalid", message: "Invalid or expired token" });
-  }
-});
 
 router.get('/philosophy', authMiddleware, async function (req, res) {
 
@@ -277,6 +271,8 @@ router.get('/philosophy', authMiddleware, async function (req, res) {
     }
   });
 
+  if(!userdata) return res.status(403).json({ error: "can't post in guest mode" });
+
   const username = userdata.username;
 
   // inserting user's last chat
@@ -289,7 +285,7 @@ router.get('/philosophy', authMiddleware, async function (req, res) {
   });
 
   try {
-    const response = await fetch("https://hopeconnect-backend-1.onrender.com/philosophy", {
+    const response = await fetch(process.env.PYTHON_SERVICE, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -312,6 +308,27 @@ router.get('/philosophy', authMiddleware, async function (req, res) {
     console.error("Error:", error);
   }
 
+});
+
+
+router.post('/verify', async function (req, res) {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ status: "error", message: "Token not provided" });
+  }
+  const payload = verifyToken(token);
+
+  const userId = await prisma.user.findUnique({
+  where: { id: payload },
+  select: { role: true }
+  });
+  const role = userId?.role || "guest";
+  
+  if (payload) {
+    res.status(200).json({ status: "valid", user: payload,role:role });
+  } else {
+    res.status(401).json({ status: "invalid", message: "Invalid or expired token" });
+  }
 });
 
 router.get('/auth', function (req, res) {
