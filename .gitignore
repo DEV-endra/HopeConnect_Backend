@@ -5,7 +5,7 @@ backend/node_modules/
 gemini/hopeconnect-env/__pycache__/
 gemini/hopeconnect-env/bin/
 gemini/hopeconnect-env/lib/
-gemini/hopeconnect-env/lib64/
+gemini/hopeconnect-env/lib64
 backend/.env
 gemini/.env
 
