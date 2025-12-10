@@ -277,7 +277,7 @@ router.get('/philosophy', authMiddleware, async function (req, res) {
   });
 
   try {
-    const response = await fetch(process.env.PYTHON_SERVICE, {
+    const response = await fetch(`${process.env.PYTHON_SERVICE}/philosophy`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

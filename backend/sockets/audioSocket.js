@@ -25,7 +25,6 @@ export function setupAudioSocket(io) {
             } catch (error) {
                 console.error("Error:", error);
             }
-
             // io.emit('receiveMessage', { senderId, msg, username })
         });
     });
