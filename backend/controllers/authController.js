@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
                 email: email,
                 role: role,
                 hash_password: hashedPassword,
-                avatar: "https://ik.imagekit.io/hopeconnect/Screenshot_2025-05-14_151314_QIjwcagYuY.png",
+                avatar: `${process.env.IMAGEKIT_URL_ENDPOINT}/Screenshot_2025-05-14_151314_QIjwcagYuY.png`,
             },
         });   // ACCOUNT CREATION
 

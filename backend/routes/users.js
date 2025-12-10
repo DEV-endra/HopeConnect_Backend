@@ -47,14 +47,6 @@ router.get('/posts', authMiddleware, async function (req, res) {
     avatar: post.User?.avatar || null
   }));
 
-  // // dummy fetch to start the fast api server
-  // fetch("https://hopeconnect-backend-1.onrender.com", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  // }).catch(error => console.error("Error waking FastAPI server:", error.message));
-
   res.status(200).json(formattedPosts);
 
 });
@@ -69,7 +61,7 @@ router.get('/newconversation', authMiddleware, async function (req, res) {
       {
         user1_id: user1,
         user2_id: peopleId,
-        lastText: "xhf jbvjbi hfv",
+        lastText: "Loading ......",
       }
     ]
   });

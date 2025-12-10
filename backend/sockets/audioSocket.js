@@ -1,4 +1,6 @@
 import { Server } from 'socket.io';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export function setupAudioSocket(io) {
 
@@ -9,7 +11,7 @@ export function setupAudioSocket(io) {
             // console.log("user said:", transcript);
             const query = transcript;
             try {
-                const response = await fetch("https://hopeconnect-backend-1.onrender.com/philosophy", {
+                const response = await fetch(`${process.env.PYTHON_SERVICE}/philosophy`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
