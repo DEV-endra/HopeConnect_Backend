@@ -310,6 +310,8 @@ router.post('/verify', async function (req, res) {
   }
   const payload = verifyToken(token);
 
+  if(!payload) return res.status(400).json({ status: "error", message: "Invalid Token" });
+
   const userId = await prisma.user.findUnique({
   where: { id: payload },
   select: { role: true }
