@@ -13,7 +13,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://hopeconnect-backend.onrender.com","https://hopeconnect.onrender.com"], 
+    allow_origins=[os.getenv("FRONTEND_URL").split(","),os.getenv("BACKEND_URL").split(",")], 
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
@@ -37,7 +37,15 @@ def get_top_k_chunks(query, k=3):
     return [chunks[i] for i in top_indices]
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("models/gemini-pro-latest")
+model = genai.GenerativeModel("models/gemini-2.5-flash")
+
+# List all available models
+# for model in genai.list_models():
+#     print(f"Model: {model.name}")
+#     print(f"Display Name: {model.display_name}")
+#     print(f"Description: {model.description}")
+#     print(f"Supported methods: {model.supported_generation_methods}")
+#     print("-" * 50)
 
 def ask_gemini(query, context_chunks):
     context = "\n".join(context_chunks)

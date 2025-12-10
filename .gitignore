@@ -1,0 +1,27 @@
+# Node modules
+backend/node_modules/
+
+# Python virtual environments
+gemini/hopeconnect-env/__pycache__/
+gemini/hopeconnect-env/bin/
+gemini/hopeconnect-env/lib/
+gemini/hopeconnect-env/lib64/
+backend/.env
+gemini/.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+**/__pycache__/
+
+# Environment variables
+.env
+*.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
